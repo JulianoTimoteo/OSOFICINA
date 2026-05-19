@@ -1,0 +1,1299 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gestão Oficina – Controle On-line de OS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --g9: #162e03;
+      --g8: #1e3e05;
+      --g7: #2a5408;
+      --g6: #35690a;
+      --g5: #40800c;
+      --g4: #55a510;
+      --g3: #7ec93f;
+      --g2: #b8e096;
+      --g1: #e5f5cf;
+      --g0: #f4fbed;
+      --amber: #f59e0b;
+      --red: #ef4444;
+      --ink: #0d1a07;
+      --ink2: #364830;
+      --ink3: #6b7f62;
+      --ink4: #aebaa4;
+      --surface: #f6f9f2;
+      --glass-bg: rgba(255, 255, 255, 0.65);
+      --glass-bd: rgba(64, 128, 12, 0.13);
+      --shadow-card: 0 2px 20px rgba(13, 26, 7, 0.07), 0 0 0 1px var(--glass-bd);
+      --shadow-hdr: 0 10px 50px rgba(13, 26, 7, 0.25);
+      --r: 10px;
+      --rl: 16px;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--surface);
+      background-image:
+        radial-gradient(ellipse 90% 50% at 50% -5%, rgba(64, 128, 12, 0.14) 0%, transparent 65%),
+        url("data:image/svg+xml,%3Csvg width='32' height='32' viewBox='0 0 32 32' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='16' cy='16' r='1' fill='%2340800c' fill-opacity='0.035'/%3E%3C/svg%3E");
+      color: var(--ink);
+      min-height: 100vh;
+    }
+
+    .page {
+      max-width: 1300px;
+      margin: 0 auto;
+      padding: 2rem 1.25rem 5rem;
+    }
+
+    /* HEADER */
+    .hdr {
+      background: linear-gradient(130deg, var(--g9) 0%, var(--g7) 55%, var(--g5) 100%);
+      border-radius: var(--rl);
+      padding: 1.75rem 2.25rem;
+      box-shadow: var(--shadow-hdr);
+      position: relative;
+      overflow: hidden;
+      margin-bottom: 1.5rem;
+    }
+
+    .hdr::before {
+      content: '';
+      position: absolute;
+      right: -60px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 280px;
+      height: 280px;
+      border-radius: 50%;
+      border: 40px solid rgba(255, 255, 255, 0.04);
+      pointer-events: none;
+    }
+
+    .hdr::after {
+      content: '';
+      position: absolute;
+      right: 60px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 160px;
+      height: 160px;
+      border-radius: 50%;
+      border: 24px solid rgba(255, 255, 255, 0.05);
+      pointer-events: none;
+    }
+
+    .hdr-inner {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1.25rem;
+    }
+
+    .hdr-brand {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .hdr-icon {
+      width: 50px;
+      height: 50px;
+      flex-shrink: 0;
+      background: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: var(--r);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+    }
+
+    .hdr-eyebrow {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: .65rem;
+      font-weight: 600;
+      letter-spacing: .3em;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, .6);
+    }
+
+    .hdr-title {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 2rem;
+      font-weight: 900;
+      line-height: 1;
+      color: #fff;
+      letter-spacing: .02em;
+    }
+
+    .hdr-status {
+      margin-top: .3rem;
+      font-size: .78rem;
+      color: rgba(255, 255, 255, .7);
+      display: flex;
+      align-items: center;
+      gap: .4rem;
+    }
+
+    .status-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--g2);
+      animation: pdot 2s ease infinite;
+    }
+
+    @keyframes pdot {
+      0%, 100% { transform: scale(1); opacity: 1 }
+      50% { transform: scale(1.6); opacity: .5 }
+    }
+
+    .hdr-controls {
+      display: flex;
+      gap: .6rem;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .search-wrap {
+      position: relative;
+    }
+
+    .search-wrap svg {
+      position: absolute;
+      left: .75rem;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 14px;
+      height: 14px;
+      color: rgba(255, 255, 255, .5);
+      pointer-events: none;
+    }
+
+    .search-input {
+      background: rgba(255, 255, 255, .12);
+      border: 1px solid rgba(255, 255, 255, .2);
+      border-radius: 999px;
+      color: #fff;
+      padding: .52rem 1rem .52rem 2.2rem;
+      font-family: 'DM Sans', sans-serif;
+      font-size: .875rem;
+      width: 230px;
+      outline: none;
+      transition: background .2s, border-color .2s;
+    }
+
+    .search-input::placeholder {
+      color: rgba(255, 255, 255, .5);
+    }
+
+    .search-input:focus {
+      background: rgba(255, 255, 255, .2);
+      border-color: rgba(255, 255, 255, .4);
+    }
+
+    .btn-refresh {
+      background: rgba(255, 255, 255, .14);
+      border: 1px solid rgba(255, 255, 255, .22);
+      color: #fff;
+      padding: .52rem 1.2rem;
+      border-radius: 999px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: .875rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: .4rem;
+      transition: background .2s;
+    }
+
+    .btn-refresh:hover {
+      background: rgba(255, 255, 255, .24);
+    }
+
+    .btn-refresh svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    .btn-refresh.spin svg {
+      animation: rot 1s linear infinite;
+    }
+
+    @keyframes rot {
+      to { transform: rotate(360deg) }
+    }
+
+    /* SUMMARY */
+    .summary {
+      display: flex;
+      gap: .9rem;
+      flex-wrap: wrap;
+      margin-bottom: 1.4rem;
+    }
+
+    .chip {
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-bd);
+      border-radius: var(--r);
+      padding: .6rem 1rem;
+      display: flex;
+      align-items: center;
+      gap: .65rem;
+      box-shadow: 0 1px 8px rgba(13, 26, 7, 0.06);
+      flex: 1;
+      min-width: 120px;
+      cursor: pointer;
+    }
+
+    .chip-icon {
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.05rem;
+    }
+
+    .chip-icon.g { background: var(--g0); }
+    .chip-icon.a { background: rgba(245, 158, 11, .12); }
+    .chip-icon.r { background: rgba(239, 68, 68, .1); }
+
+    .chip-num {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 1.55rem;
+      font-weight: 800;
+      line-height: 1;
+      color: var(--ink);
+    }
+
+    .chip-lbl {
+      font-size: .7rem;
+      color: var(--ink3);
+      font-weight: 500;
+    }
+
+    /* TABS */
+    .tabs-scroll {
+      overflow-x: auto;
+      scrollbar-width: none;
+      margin-bottom: 1.25rem;
+    }
+
+    .tabs-scroll::-webkit-scrollbar {
+      display: none;
+    }
+
+    .tabs {
+      display: flex;
+      gap: .45rem;
+      padding-bottom: 2px;
+    }
+
+    .tab {
+      display: flex;
+      align-items: center;
+      gap: .45rem;
+      padding: .48rem 1rem;
+      border-radius: 999px;
+      border: 1px solid var(--glass-bd);
+      background: var(--glass-bg);
+      font-family: 'DM Sans', sans-serif;
+      font-size: .78rem;
+      font-weight: 600;
+      white-space: nowrap;
+      cursor: pointer;
+      color: var(--ink2);
+      transition: all .18s;
+      outline: none;
+    }
+
+    .tab:hover {
+      border-color: var(--g4);
+      color: var(--g5);
+    }
+
+    .tab.active {
+      background: var(--g5);
+      border-color: var(--g5);
+      color: #fff;
+      box-shadow: 0 4px 16px rgba(64, 128, 12, .3);
+    }
+
+    .tab-pill {
+      background: rgba(0, 0, 0, .1);
+      border-radius: 999px;
+      padding: 1px 7px;
+      font-size: .68rem;
+      font-weight: 700;
+    }
+
+    .tab.active .tab-pill {
+      background: rgba(255, 255, 255, .22);
+    }
+
+    /* GRID */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+      gap: 1rem;
+    }
+
+    /* CARD */
+    .card {
+      background: var(--glass-bg);
+      backdrop-filter: blur(18px);
+      border: 1px solid var(--glass-bd);
+      border-radius: var(--rl);
+      box-shadow: var(--shadow-card);
+      overflow: hidden;
+      transition: transform .2s, box-shadow .2s;
+      animation: cin .32s ease both;
+    }
+
+    .card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 32px rgba(13, 26, 7, .12), 0 0 0 1px var(--glass-bd);
+    }
+
+    @keyframes cin {
+      from { opacity: 0; transform: translateY(10px) }
+      to { opacity: 1; transform: translateY(0) }
+    }
+
+    .card-head {
+      background: linear-gradient(90deg, var(--g9), var(--g6));
+      padding: .8rem 1.1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: .5rem;
+    }
+
+    .card-frota {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: .98rem;
+      font-weight: 800;
+      letter-spacing: .03em;
+      color: #fff;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .warn-pill {
+      flex-shrink: 0;
+      background: rgba(245, 158, 11, .2);
+      border: 1px solid rgba(245, 158, 11, .45);
+      color: var(--amber);
+      font-size: .62rem;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 999px;
+      animation: wblink 1.4s ease infinite;
+    }
+
+    @keyframes wblink {
+      0%, 100% { opacity: 1 }
+      50% { opacity: .3 }
+    }
+
+    .card-body {
+      padding: 1.1rem;
+    }
+
+    .row-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: .9rem;
+    }
+
+    .os-lbl {
+      display: block;
+      font-size: .58rem;
+      text-transform: uppercase;
+      letter-spacing: .14em;
+      color: var(--ink3);
+      font-weight: 600;
+      margin-bottom: 2px;
+    }
+
+    .os-num {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 1.7rem;
+      font-weight: 900;
+      line-height: 1;
+      color: var(--ink);
+    }
+
+    .days-badge {
+      padding: 3px 10px;
+      border-radius: 8px;
+      font-size: .76rem;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .days-badge.ok { background: var(--g0); color: var(--g6); }
+    .days-badge.att { background: rgba(245, 158, 11, .12); color: #92400e; }
+    .days-badge.urg { background: rgba(239, 68, 68, .1); color: #991b1b; }
+
+    .eqp-name {
+      font-size: .92rem;
+      font-weight: 700;
+      color: var(--ink);
+      margin-bottom: .2rem;
+    }
+
+    .eqp-sub {
+      font-size: .7rem;
+      color: var(--ink3);
+      margin-bottom: .85rem;
+    }
+
+    .eqp-sub strong {
+      color: var(--g5);
+    }
+
+    .divider {
+      height: 1px;
+      background: var(--glass-bd);
+      margin-bottom: .85rem;
+    }
+
+    .dates {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: .55rem;
+      margin-bottom: .85rem;
+    }
+
+    .date-box {
+      background: rgba(64, 128, 12, .04);
+      border: 1px solid var(--glass-bd);
+      border-radius: 8px;
+      padding: .5rem .65rem;
+    }
+
+    .date-lbl {
+      display: block;
+      font-size: .56rem;
+      text-transform: uppercase;
+      letter-spacing: .14em;
+      color: var(--ink3);
+      font-weight: 600;
+      margin-bottom: 2px;
+    }
+
+    .date-val {
+      font-size: .84rem;
+      font-weight: 700;
+      color: var(--ink);
+    }
+
+    .obs {
+      font-size: .78rem;
+      line-height: 1.55;
+      color: var(--ink2);
+      background: rgba(64, 128, 12, .05);
+      border-left: 3px solid var(--g4);
+      border-radius: 0 6px 6px 0;
+      padding: .5rem .75rem;
+    }
+
+    /* EMPTY / SKELETON */
+    .empty {
+      grid-column: 1/-1;
+      text-align: center;
+      padding: 4rem 1rem;
+      color: var(--ink3);
+    }
+
+    .empty-icon {
+      font-size: 3rem;
+      opacity: .4;
+      margin-bottom: .75rem;
+    }
+
+    .empty-title {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: .35rem;
+      color: var(--ink2);
+    }
+
+    .empty p code {
+      background: rgba(64, 128, 12, .1);
+      padding: 1px 6px;
+      border-radius: 4px;
+      font-family: monospace;
+      font-size: .85em;
+    }
+
+    .skel {
+      background: linear-gradient(90deg, rgba(64, 128, 12, .06) 25%, rgba(64, 128, 12, .13) 50%, rgba(64, 128, 12, .06) 75%);
+      background-size: 200% 100%;
+      animation: shim 1.5s ease infinite;
+      border-radius: var(--rl);
+    }
+
+    @keyframes shim {
+      from { background-position: 200% 0 }
+      to { background-position: -200% 0 }
+    }
+
+    /* ============================================
+       RESPONSIVIDADE PROFISSIONAL - MOBILE / TABLET
+    ============================================ */
+    @media (max-width: 768px) {
+      .page { padding: 1rem .75rem 3rem; }
+      
+      .hdr {
+        padding: 1.1rem 1rem;
+        border-radius: 14px;
+      }
+      .hdr-title { font-size: 1.45rem; }
+      .hdr-icon { width: 42px; height: 42px; font-size: 1.25rem; }
+      
+      .hdr-controls {
+        width: 100%;
+        margin-top: .5rem;
+        justify-content: space-between;
+      }
+      
+      .search-input { width: 100%; max-width: 220px; }
+      
+      .summary {
+        gap: .6rem;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        padding-bottom: 8px;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+      }
+      .summary::-webkit-scrollbar { display: none; }
+      
+      .chip {
+        min-width: 108px;
+        flex-shrink: 0;
+        padding: .5rem .85rem;
+      }
+      
+      .tabs-scroll {
+        margin-bottom: .75rem;
+        -webkit-overflow-scrolling: touch;
+      }
+      
+      .tab {
+        padding: .42rem .85rem;
+        font-size: .72rem;
+      }
+      
+      .grid {
+        grid-template-columns: 1fr;
+        gap: .85rem;
+      }
+      
+      .card {
+        border-radius: 14px;
+      }
+      
+      .card-head { padding: .7rem .95rem; }
+      .card-body { padding: .95rem; }
+      
+      .os-num { font-size: 1.55rem; }
+      
+      /* Dashboard mobile */
+      #detailView {
+        padding: 1.25rem;
+        margin-top: 1rem;
+      }
+      
+      .kpi-row {
+        grid-template-columns: repeat(2, 1fr);
+        gap: .75rem;
+      }
+      
+      .kpi-value { font-size: 1.6rem; }
+      
+      .charts-grid {
+        grid-template-columns: 1fr;
+        gap: 1.1rem;
+      }
+      
+      #donutChart {
+        max-width: 280px;
+        height: 280px;
+      }
+      
+      .top-table {
+        font-size: .85rem;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      .hdr-title { font-size: 1.3rem; }
+      .search-input { max-width: 100%; }
+      
+      .kpi-row {
+        grid-template-columns: 1fr 1fr;
+      }
+      
+      .chip {
+        min-width: 95px;
+      }
+    }
+    
+    /* Melhorias de toque em tablets e celulares */
+    .chip, .tab, .btn-refresh {
+      -webkit-tap-highlight-color: transparent;
+    }
+    
+    .chip:active, .tab:active {
+      transform: scale(0.97);
+      transition: transform .1s;
+    }
+
+    /* DASHBOARD DETALHADO - VERSÃO PROFISSIONAL */
+    #detailView {
+      display: none;
+      margin-top: 1.5rem;
+      padding: 1.75rem;
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-bd);
+      border-radius: var(--rl);
+      box-shadow: var(--shadow-card);
+    }
+
+    .detail-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.5rem;
+    }
+
+    .kpi-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1.75rem;
+    }
+
+    .kpi {
+      background: rgba(255,255,255,.78);
+      border: 1px solid var(--glass-bd);
+      border-radius: var(--r);
+      padding: 1rem 1.15rem;
+      text-align: center;
+    }
+
+    .kpi-value {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 1.9rem;
+      font-weight: 800;
+      color: var(--ink);
+      line-height: 1;
+    }
+
+    .kpi-label {
+      font-size: .72rem;
+      color: var(--ink3);
+      margin-top: .3rem;
+      font-weight: 600;
+    }
+
+    .charts-grid {
+      display: grid;
+      grid-template-columns: 1fr 1.2fr;
+      gap: 1.5rem;
+      margin-bottom: 1.75rem;
+    }
+
+    @media (max-width: 920px) {
+      .charts-grid { grid-template-columns: 1fr; }
+    }
+
+    .chart-card {
+      background: rgba(255,255,255,.72);
+      border: 1px solid var(--glass-bd);
+      border-radius: var(--r);
+      padding: 1.1rem;
+    }
+
+    .chart-card h4 {
+      font-size: .95rem;
+      font-weight: 700;
+      margin-bottom: .85rem;
+      color: var(--ink2);
+    }
+
+    #donutChart {
+      width: 100%;
+      max-width: 340px;
+      height: 340px;
+      display: block;
+      margin: 0 auto;
+    }
+
+    #barFrame {
+      min-height: 320px;
+    }
+
+    .section {
+      margin-top: 1.6rem;
+    }
+
+    .section h4 {
+      font-size: .95rem;
+      font-weight: 700;
+      margin-bottom: .75rem;
+      color: var(--ink2);
+    }
+
+    .top-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: .9rem;
+    }
+
+    .top-table th, .top-table td {
+      padding: .6rem .85rem;
+      text-align: left;
+      border-bottom: 1px solid var(--glass-bd);
+    }
+
+    .top-table th {
+      font-weight: 600;
+      color: var(--ink3);
+      font-size: .78rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+
+    <header class="hdr">
+      <div class="hdr-inner">
+        <div class="hdr-brand">
+          <div class="hdr-icon">🔧</div>
+          <div>
+            <div class="hdr-eyebrow">Gestão Oficina</div>
+            <div class="hdr-title">Controle On-line de OS</div>
+            <div class="hdr-status">
+              <span class="status-dot"></span>
+              <span id="statusText">Inicializando...</span>
+            </div>
+          </div>
+        </div>
+        <div class="hdr-controls">
+          <div class="search-wrap">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="7" cy="7" r="4.5" />
+              <path d="M11 11l2.5 2.5" />
+            </svg>
+            <input class="search-input" id="searchInput" type="text" placeholder="OS, frota...">
+          </div>
+          <button class="btn-refresh" id="refreshBtn">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M13.5 8A5.5 5.5 0 1 1 8 2.5c1.5 0 2.9.6 3.9 1.6L13.5 5.5" />
+              <path d="M13.5 2.5v3h-3" />
+            </svg>
+            Atualizar
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <div class="summary" id="summaryBar"></div>
+    <div class="tabs-scroll">
+      <div class="tabs" id="tabsEl"></div>
+    </div>
+    <div class="grid" id="gridEl"></div>
+
+    <!-- DASHBOARD DETALHADO PROFISSIONAL -->
+    <div id="detailView">
+      <div class="detail-header">
+        <button class="tab" onclick="hideDetail()">← Voltar</button>
+        <h3 id="detailTitle" style="font-weight:800; font-size:1.45rem; margin:0;"></h3>
+      </div>
+
+      <!-- KPIs -->
+      <div class="kpi-row" id="kpiRow"></div>
+
+      <!-- Gráficos principais -->
+      <div class="charts-grid">
+        <div class="chart-card">
+          <h4>Distribuição por Equipamento</h4>
+          <svg id="donutChart" width="340" height="340" aria-label="Downtime donut"></svg>
+        </div>
+        <div class="chart-card">
+          <h4>Top 10 Equipamentos com Maior Tempo Parado</h4>
+          <div id="barFrame"></div>
+        </div>
+      </div>
+
+      <!-- Por Categoria -->
+      <div class="section">
+        <h4>Parada por Categoria de Frota</h4>
+        <div id="categoryBars"></div>
+      </div>
+
+      <!-- Top 5 Críticos -->
+      <div class="section">
+        <h4>Top 5 OS Mais Críticas (maior tempo parado)</h4>
+        <table class="top-table" id="topTable">
+          <thead>
+            <tr><th>Equipamento</th><th>Categoria</th><th>Dias</th><th>OS</th></tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    /* ── ORDEM DAS ABAS ───────────────────────────────────────── */
+    const TAB_ORDER = [
+      "COLHEDORA DE CANA PICADA", "CANAVIEIROS", "PRANCHA/MUNCK", "BOMBEIROS",
+      "CAM - OFICINA", "LINHA AMARELA", "TRATORES", "SÓ FERTIRRIGAÇÃO",
+      "BASCULANTE", "CAM - HERBICIDA", "CARREGADORAS", "IMPL ROD.1", "IMPL ROD.3",
+      "IMPLEMENTOS", "VEICULOS LEVES", "SECUNDARIOS", "OUTROS", "CAMINHÕES INTERNOS",
+    ];
+
+    /* ── APELIDOS ─────────────────────────────────────────────── */
+    const APELIDOS = {
+      "6/1 - PÁ CARREGADEIRA - PA CARREGADEIRA": "LINHA AMARELA",
+      "41/1 - RETROESCAVADEIRA - RETROESCAVADEIRA": "LINHA AMARELA",
+      "4/1 - MOTONIVELADORAS - MOTONIVELADORAS": "LINHA AMARELA",
+      "11/1 - VEICULOS LEVES - AMBULANCIA": "VEICULOS LEVES",
+      "11/6 - VEICULOS LEVES - ALUGADOS": "VEICULOS LEVES",
+      "11/4 - VEICULOS LEVES - VEÍCULOS LEVES": "VEICULOS LEVES",
+      "29/1 - ONIBUS - TRANSPORTE PESSOAL": "VEICULOS LEVES",
+      "1/7 - TRATOR DE PNEUS - LINHA MEDIA": "TRATORES",
+      "1/6 - TRATOR DE PNEUS - LINHA LEVE": "TRATORES",
+      "1/8 - TRATOR DE PNEUS - LINHA PESADA": "TRATORES",
+      "1/10 - TRATOR DE PNEUS - AUTOPROPELIDO": "TRATORES",
+      "10/10 - CAMINHOES - CARGA SECA": "CAMINHÕES INTERNOS",
+      "10/67 - CAMINHOES - COLETA DE LIXO": "CAMINHÕES INTERNOS",
+      "10/24 - CAMINHOES - PRANCHA": "PRANCHA/MUNCK",
+      "10/16 - CAMINHOES - MUNCK": "PRANCHA/MUNCK",
+      "10/6 - CAMINHOES - TRANSPORTE DE CANA": "CANAVIEIROS",
+      "16/1 - IMPLEMENTO RODOVIARIO - REBOQUE CANAVIEIRO 2 EIXOS": "IMPL ROD.1",
+      "16/22 - IMPLEMENTO RODOVIARIO - REBOQUE CANAVIEIRO 4 EIXOS": "IMPL ROD.1",
+      "16/19 - IMPLEMENTO RODOVIARIO - REBOQUE VINHAÇA": "SÓ FERTIRRIGAÇÃO",
+      "16/13 - IMPLEMENTO RODOVIARIO - REBOQUE AREA DE VIVENCIA": "IMPL ROD.3",
+      "16/10 - IMPLEMENTO RODOVIARIO - SEMI-REBOQUES BASCULANTE": "IMPL ROD.3",
+      "16/9 - IMPLEMENTO RODOVIARIO - REBOQUE PRANCHA": "IMPL ROD.3",
+      "16/20 - IMPLEMENTO RODOVIARIO - REBOQUE PALHA": "IMPL ROD.3",
+      "14/1 - COLHEDORA - COLHEDORA DE CANA PICADA": "COLHEDORA DE CANA PICADA",
+      "13/22 - IMPLEMENTOS AGRICOLAS - GRADE NIVELADORA": "IMPLEMENTOS",
+      "13/21 - IMPLEMENTOS AGRICOLAS - GRADE INTERMEDIARIA": "IMPLEMENTOS",
+      "13/23 - IMPLEMENTOS AGRICOLAS - SUBSOLADOR": "IMPLEMENTOS",
+      "3/7 - CARREGADORAS - GUINCHO": "CARREGADORAS",
+      "10/13 - CAMINHOES - OFICINA VOLANTE": "CAM - OFICINA",
+      "10/7 - CAMINHOES - COMBOIOS": "CAM - OFICINA",
+      "10/11 - CAMINHOES - BORRACHEIRO": "CAM - OFICINA",
+      "10/17 - CAMINHOES - HERBICIDA": "CAM - HERBICIDA",
+      "10/9 - CAMINHOES - BOMBEIROS": "BOMBEIROS",
+      "10/8 - CAMINHOES - BASCULANTE": "BASCULANTE",
+      "42/1 - MOTOR ESTACIONÁRIO - MOTOBOMBA VINHAÇA": "SÓ FERTIRRIGAÇÃO",
+      "10/23 - CAMINHOES - TRANSPORTE DE VINHAÇA": "SÓ FERTIRRIGAÇÃO",
+      "42/2 - MOTOR ESTACIONÁRIO - MOTOR GERADOR": "SECUNDARIOS",
+      "44/4 - EQUIPAMENTO - JBA / RFA / JHA - CARROS LEVES": "SECUNDARIOS",
+      "44/8 - EQUIPAMENTO - JBA / RFA / JHA - CURRAL": "SECUNDARIOS",
+    };
+
+    const LOTE_FILTER = "GERADA PELA GERAÇÃO DE O.S. EM LOTE -";
+    const apelido = sub => APELIDOS[sub] || "OUTROS";
+    const fmtDate = iso => iso ? new Date(iso).toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit", year: "numeric" }) : "—";
+
+    /* ── ESTADO ───────────────────────────────────────────────── */
+    let allData = [], activeTab = null, searchTerm = "";
+
+    const $status = document.getElementById("statusText");
+    const $tabs = document.getElementById("tabsEl");
+    const $grid = document.getElementById("gridEl");
+    const $summary = document.getElementById("summaryBar");
+    const $search = document.getElementById("searchInput");
+    const $refresh = document.getElementById("refreshBtn");
+
+    /* ── CARREGAR DADOS ───────────────────────────────────────── */
+    async function loadData() {
+      $refresh.classList.add("spin");
+      $status.textContent = "Conectando à API...";
+      renderSkeleton();
+
+      if (location.protocol === "file:") {
+        showError("Arquivo aberto diretamente no navegador", "Este painel precisa do servidor Node para funcionar.", [
+          "1. Abra o terminal na pasta do projeto",
+          "2. Execute: <code>node server.js</code>",
+          "3. Acesse: <code>http://localhost:3000</code>",
+        ]);
+        $refresh.classList.remove("spin");
+        return;
+      }
+
+      try {
+        const res = await fetch("/api/os");
+        const contentType = res.headers.get("content-type") || "";
+        if (!contentType.includes("application/json")) {
+          throw new Error("SERVER_NOT_RUNNING");
+        }
+
+        const json = await res.json();
+        if (!json.ok) throw new Error(json.error || "Erro na API");
+
+        allData = (json.rows || []).filter(o => !(o.OS_OBSERVACAO || "").includes(LOTE_FILTER));
+        $status.textContent = `${allData.length} OS carregadas • ${new Date().toLocaleTimeString("pt-BR")}`;
+        activeTab = null;
+        render();
+      } catch (err) {
+        const isNotRunning = err.message === "SERVER_NOT_RUNNING" || err.message.includes("fetch") || err.message.includes("Failed");
+        if (isNotRunning) {
+          showError("Servidor não encontrado", "O proxy Node.js não está rodando nesta porta.", [
+            "1. Abra o terminal na pasta do projeto",
+            "2. Execute: <code>node server.js</code>",
+            "3. Acesse: <code>http://localhost:3000</code>",
+          ]);
+        } else {
+          showError("Erro na API SimpleFarm", err.message, [
+            "Verifique usuário e senha no <code>server.js</code>",
+            "Confirme acesso à rede da usina",
+          ]);
+        }
+        $summary.innerHTML = "";
+        $tabs.innerHTML = "";
+      } finally {
+        $refresh.classList.remove("spin");
+      }
+    }
+
+    /* ── RENDER ───────────────────────────────────────────────── */
+    function render() {
+      const filtered = applySearch(allData);
+      const grouped = groupBy(filtered);
+      const keys = TAB_ORDER.filter(k => grouped[k]);
+      if (!activeTab || !grouped[activeTab]) activeTab = keys[0] || null;
+      renderSummary(filtered);
+      renderTabs(grouped, keys);
+      renderCards(grouped[activeTab] || []);
+    }
+
+    function applySearch(data) {
+      if (!searchTerm) return data;
+      const t = searchTerm.toLowerCase();
+      return data.filter(o =>
+        String(o.COD_OS).includes(t) ||
+        (o.EQP_CC_AGD || "").toLowerCase().includes(t)
+      );
+    }
+
+    function groupBy(data) {
+      const g = {};
+      data.forEach(o => {
+        const k = apelido(o.SUB_CLASSE);
+        if (!g[k]) g[k] = [];
+        g[k].push(o);
+      });
+      for (const k in g) g[k].sort((a, b) => (b.DIAS_PERMANENCIA || 0) - (a.DIAS_PERMANENCIA || 0));
+      return g;
+    }
+
+    function renderSummary(data) {
+      const total = data.length;
+      const alerta = data.filter(o => o.DIAS_PERMANENCIA >= 2 && !(o.OS_OBSERVACAO || "").toLowerCase().includes("comunicada")).length;
+      const critico = data.filter(o => o.DIAS_PERMANENCIA >= 7).length;
+
+      $summary.innerHTML = `
+        <div class="chip" data-type="total">
+          <div class="chip-icon g">📋</div>
+          <div><div class="chip-num">${total}</div><div class="chip-lbl">Total OS</div></div>
+        </div>
+        <div class="chip" data-type="atten">
+          <div class="chip-icon a">⚠️</div>
+          <div><div class="chip-num">${alerta}</div><div class="chip-lbl">Atenção (+48h)</div></div>
+        </div>
+        <div class="chip" data-type="critical">
+          <div class="chip-icon r">🔴</div>
+          <div><div class="chip-num">${critico}</div><div class="chip-lbl">Crítico (+7 dias)</div></div>
+        </div>
+      `;
+
+      // Tornar os chips clicáveis
+      $summary.querySelectorAll('.chip').forEach(chip => {
+        chip.onclick = () => openDetail(chip.dataset.type);
+      });
+    }
+
+    function renderTabs(grouped, keys) {
+      $tabs.innerHTML = "";
+      keys.forEach(k => {
+        const btn = document.createElement("button");
+        btn.className = "tab" + (k === activeTab ? " active" : "");
+        btn.innerHTML = `${k} <span class="tab-pill">${grouped[k].length}</span>`;
+        btn.onclick = () => { activeTab = k; renderTabs(grouped, keys); renderCards(grouped[k]); };
+        $tabs.appendChild(btn);
+      });
+    }
+
+    function renderCards(orders) {
+      $grid.innerHTML = "";
+      if (!orders.length) {
+        $grid.innerHTML = `<div class="empty"><div class="empty-icon">🔍</div><div class="empty-title">Nenhuma OS encontrada</div><p>Ajuste o filtro ou a pesquisa.</p></div>`;
+        return;
+      }
+      orders.forEach((o, i) => {
+        const dias = o.DIAS_PERMANENCIA || 0;
+        const isAlert = dias >= 2 && !(o.OS_OBSERVACAO || "").toLowerCase().includes("comunicada");
+        const dc = dias >= 7 ? "urg" : dias >= 2 ? "att" : "ok";
+        const card = document.createElement("article");
+        card.className = "card";
+        card.style.animationDelay = `${i * 35}ms`;
+        card.innerHTML = `
+          <div class="card-head">
+            <span class="card-frota">${o.EQP_CC_AGD || "—"}</span>
+            ${isAlert ? `<span class="warn-pill">⚠ +48h</span>` : ""}
+          </div>
+          <div class="card-body">
+            <div class="row-top">
+              <div><span class="os-lbl">Cód. OS</span><div class="os-num">${o.COD_OS || "—"}</div></div>
+              <div class="days-badge ${dc}">${dias} dias</div>
+            </div>
+            <div class="eqp-name">${o.EQP_CC_AGD || "—"}</div>
+            <div class="eqp-sub">${o.OFICINA || "—"} &nbsp;•&nbsp; <strong>${apelido(o.SUB_CLASSE)}</strong></div>
+            <div class="divider"></div>
+            <div class="dates">
+              <div class="date-box"><span class="date-lbl">Entrada</span><div class="date-val">${fmtDate(o.OS_DT_ENTRADA)}</div></div>
+              <div class="date-box"><span class="date-lbl">Previsão</span><div class="date-val">${fmtDate(o.OS_DT_PREVISAO)}</div></div>
+            </div>
+            ${o.OS_OBSERVACAO ? `<div class="obs">${o.OS_OBSERVACAO}</div>` : ""}
+          </div>
+        `;
+        $grid.appendChild(card);
+      });
+    }
+
+    function renderSkeleton() {
+      $grid.innerHTML = Array.from({ length: 8 }, (_, i) => `<div class="skel" style="height:230px;animation-delay:${i * 80}ms"></div>`).join("");
+      $tabs.innerHTML = "";
+      $summary.innerHTML = "";
+    }
+
+    function showError(title, subtitle, steps = []) {
+      $status.textContent = "Desconectado";
+      const stepsHtml = steps.length ? `<ul style="margin-top:.75rem;text-align:left;display:inline-block;font-size:.82rem;line-height:2">${steps.map(s => `<li>${s}</li>`).join("")}</ul>` : "";
+      $grid.innerHTML = `<div class="empty"><div class="empty-icon">🔌</div><div class="empty-title">${title}</div><p style="font-size:.85rem">${subtitle}</p>${stepsHtml}</div>`;
+    }
+
+    /* ── DASHBOARD DETALHADO PROFISSIONAL ─────────────────────── */
+    function hideDetail() {
+      const detailView = document.getElementById("detailView");
+      detailView.style.display = "none";
+
+      // Volta ao topo da página
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function openDetail(type) {
+      const detailView = document.getElementById("detailView");
+      const titleEl = document.getElementById("detailTitle");
+      const donut = document.getElementById("donutChart");
+      const bar = document.getElementById("barFrame");
+      const kpiRow = document.getElementById("kpiRow");
+      const catContainer = document.getElementById("categoryBars");
+      const tableBody = document.querySelector("#topTable tbody");
+
+      detailView.style.display = "block";
+
+      // Rola suavemente até o dashboard (melhor timing para mobile/tablet)
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          detailView.scrollIntoView({ 
+            behavior: "smooth", 
+            block: "start" 
+          });
+        });
+      });
+
+      let subset = allData;
+      let titleText = "Visão Geral de Downtime";
+
+      if (type === "atten") {
+        subset = allData.filter(o => (o.DIAS_PERMANENCIA || 0) >= 2);
+        titleText = "Atenção (+48h)";
+      } else if (type === "critical") {
+        subset = allData.filter(o => (o.DIAS_PERMANENCIA || 0) >= 7);
+        titleText = "Crítico (+7 dias)";
+      }
+
+      titleEl.textContent = titleText;
+
+      // KPIs
+      const totalHours = subset.reduce((sum, o) => sum + ((o.DIAS_PERMANENCIA || 0) * 24), 0);
+      const avgDays = subset.length ? (subset.reduce((sum, o) => sum + (o.DIAS_PERMANENCIA || 0), 0) / subset.length).toFixed(1) : 0;
+      const uniqueEq = new Set(subset.map(o => o.EQP_CC_AGD)).size;
+
+      kpiRow.innerHTML = `
+        <div class="kpi"><div class="kpi-value">${totalHours.toFixed(0)}</div><div class="kpi-label">Horas paradas</div></div>
+        <div class="kpi"><div class="kpi-value">${avgDays}</div><div class="kpi-label">Média de dias</div></div>
+        <div class="kpi"><div class="kpi-value">${uniqueEq}</div><div class="kpi-label">Equipamentos</div></div>
+        <div class="kpi"><div class="kpi-value">${subset.length}</div><div class="kpi-label">Ordens de Serviço</div></div>
+      `;
+
+      // Dados por equipamento
+      const eqMap = {};
+      subset.forEach(o => {
+        const eq = o.EQP_CC_AGD || "Desconhecido";
+        const hours = (o.DIAS_PERMANENCIA || 0) * 24;
+        eqMap[eq] = (eqMap[eq] || 0) + hours;
+      });
+      const eqData = Object.entries(eqMap).map(([label, value]) => ({ label, value }))
+        .sort((a, b) => b.value - a.value);
+
+      renderDonut(donut, eqData);
+      renderBar(bar, eqData.slice(0, 10));
+
+      // Por categoria (usando apelido)
+      const catMap = {};
+      subset.forEach(o => {
+        const cat = apelido(o.SUB_CLASSE);
+        const hours = (o.DIAS_PERMANENCIA || 0) * 24;
+        catMap[cat] = (catMap[cat] || 0) + hours;
+      });
+      const catData = Object.entries(catMap).map(([label, value]) => ({ label, value }))
+        .sort((a, b) => b.value - a.value);
+      renderCategoryBars(catContainer, catData);
+
+      // Top 5 OS mais críticas
+      const top5 = [...subset]
+        .sort((a, b) => (b.DIAS_PERMANENCIA || 0) - (a.DIAS_PERMANENCIA || 0))
+        .slice(0, 5);
+
+      tableBody.innerHTML = top5.map(o => `
+        <tr>
+          <td><strong>${o.EQP_CC_AGD || "—"}</strong></td>
+          <td>${apelido(o.SUB_CLASSE)}</td>
+          <td><span style="font-weight:700; color:#991b1b;">${o.DIAS_PERMANENCIA || 0} dias</span></td>
+          <td>${o.COD_OS || "—"}</td>
+        </tr>
+      `).join("");
+    }
+
+    function renderDonut(svgEl, data) {
+      const isMobile = window.innerWidth < 600;
+      const w = isMobile ? 280 : 340;
+      const h = isMobile ? 280 : 340;
+      const r = isMobile ? 100 : 125;
+      const ir = isMobile ? 60 : 72;
+      
+      const total = data.reduce((a, b) => a + b.value, 0);
+      const colors = ["#6ee7b7", "#93c5fd", "#fca5a5", "#e9d5ff", "#a7f3d0", "#fde68a"];
+
+      let paths = "";
+      let acc = 0;
+
+      data.forEach((d, i) => {
+        const frac = total ? d.value / total : 0;
+        const start = acc * 2 * Math.PI;
+        const angle = frac * 2 * Math.PI;
+        acc += frac;
+        const end = start + angle;
+        const large = angle > Math.PI ? 1 : 0;
+
+        const x1 = w / 2 + Math.cos(start) * r;
+        const y1 = h / 2 + Math.sin(start) * r;
+        const x2 = w / 2 + Math.cos(end) * r;
+        const y2 = h / 2 + Math.sin(end) * r;
+
+        const path = `M ${w / 2} ${h / 2} L ${x1} ${y1} A ${r} ${r} 0 ${large} 1 ${x2} ${y2} Z`;
+        paths += `<path d="${path}" fill="${colors[i % colors.length]}" stroke="white" stroke-width="1"></path>`;
+      });
+
+      svgEl.setAttribute("width", w);
+      svgEl.setAttribute("height", h);
+
+      svgEl.innerHTML = `
+        ${paths}
+        <circle cx="${w / 2}" cy="${h / 2}" r="${ir}" fill="white" opacity="0.92"/>
+        <text x="${w / 2}" y="${h / 2 - (isMobile ? 6 : 8)}" text-anchor="middle" font-size="${isMobile ? 22 : 26}" font-weight="800" fill="#111">${total.toFixed(0)}</text>
+        <text x="${w / 2}" y="${h / 2 + (isMobile ? 14 : 18)}" text-anchor="middle" font-size="${isMobile ? 11 : 13}" fill="#555">horas</text>
+      `;
+    }
+
+    function renderBar(container, data) {
+      const isMobile = window.innerWidth < 600;
+      const max = Math.max(...data.map(d => d.value), 1);
+      
+      const html = data.map((d, i) => {
+        const barWidth = Math.round((d.value / max) * (isMobile ? 180 : 240));
+        const color = ["#34d399", "#60a5fa", "#f472b6", "#f59e0b"][i % 4];
+        return `
+          <div style="display:flex; align-items:center; gap:8px; margin:6px 0;">
+            <span style="width:${isMobile ? 105 : 125}px; font-size:12px; color:#333; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${d.label}</span>
+            <div style="flex:1; height:14px; background:rgba(0,0,0,.12); border-radius:8px; overflow:hidden;">
+              <div style="width:${barWidth}px; height:100%; background:${color}; border-radius:8px;"></div>
+            </div>
+            <span style="width:48px; text-align:right; font-size:12px; font-weight:700;">${Math.round(d.value)}h</span>
+          </div>
+        `;
+      }).join("");
+
+      container.innerHTML = `<div style="padding:4px;">${html}</div>`;
+    }
+
+    function renderCategoryBars(container, data) {
+      const max = Math.max(...data.map(d => d.value), 1);
+      const html = data.map((d, i) => {
+        const width = Math.round((d.value / max) * 100);
+        return `
+          <div style="display:flex; align-items:center; gap:12px; margin:6px 0;">
+            <span style="width:175px; font-size:13px; color:#333;">${d.label}</span>
+            <div style="flex:1; height:14px; background:rgba(0,0,0,.1); border-radius:999px; overflow:hidden;">
+              <div style="width:${width}%; height:100%; background:#40800c; border-radius:999px;"></div>
+            </div>
+            <span style="width:60px; text-align:right; font-size:13px; font-weight:700;">${Math.round(d.value)}h</span>
+          </div>
+        `;
+      }).join("");
+
+      container.innerHTML = html || "<div style='color:#777; font-size:13px;'>Sem dados</div>";
+    }
+
+    /* ── EVENTOS ──────────────────────────────────────────────── */
+    $search.addEventListener("input", e => {
+      searchTerm = e.target.value.trim();
+      activeTab = null;
+      render();
+    });
+
+    $refresh.addEventListener("click", loadData);
+    setInterval(loadData, 5 * 60 * 1000);
+    window.addEventListener("DOMContentLoaded", loadData);
+  </script>
+</body>
+</html>

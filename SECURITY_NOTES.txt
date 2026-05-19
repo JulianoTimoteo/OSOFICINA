@@ -1,0 +1,4 @@
+<project>
+  <environment>production</environment>
+  <notes>Refinamento de segurança aplicado: credenciais via .env, TLS condicional, rate limiting, headers de segurança.</notes>
+</project>

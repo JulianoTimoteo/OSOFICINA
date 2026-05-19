@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!-->
+<html class="no-js">
+<!--<![endif]-->
+<head>
+    
+    
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Autentique-se para prosseguir</title>
+    <meta name="description" content="O SimpleFarm é um software desenvolvido em plataforma web, baseado nas tecnologias Microsoft. Devido à possibilidade de hospedagem na nuvem (Cloud computing), o sistema pode ser acessado de qualquer computador com acesso à internet">
+    <meta name="viewport" content="width=device-width">
+    <link rel="shortcut icon" type="image/x-icon" href="/Content/core/images/favicon.ico">
+
+    <link rel="stylesheet" type="text/css" href="/Content/core/css/ga-core.css" />
+    <link rel="stylesheet" type="text/css" href="/Content/packages/toastr/toastr.min.css" />
+    <link rel="stylesheet" type="text/css" href="/Content/css/colors.css" />
+    <link rel="stylesheet" type="text/css" href="/Content/css/login.css" />
+    <link rel="stylesheet" type="text/css" href="/Content/css/login-box.css" />
+    <link rel="stylesheet" type="text/css" href="/Content/packages/fontawesome/css/all.css" />
+    <link rel="stylesheet" type="text/css" href="/Content/packages/fontawesome/css/fix.css" />
+    <link rel="stylesheet" type="text/css" href="/Content/core/css/ga-checkbox.css" />
+            
+                <link rel="stylesheet" type="text/css" href="/Config/Content/css/theme.css" />
+            
+
+
+    <script src="/Content/packages/jquery/jquery-3.6.0.min.js"></script>
+    <script src="/Content/packages/toastr/toastr.min.js"></script>
+    <script src="/Content/packages/jquery/validation/jquery.validate.min.js"></script>
+    <script src="/Content/packages/jquery/validation/jquery.validate.unobtrusive.min.js"></script>
+    <script src="/Content/packages/jquery/validation/jquery.validate.unobstrusive.fixValidationMessage.js"></script>
+
+    <script type="text/javascript">
+        var getLocation = function getLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function(position) {
+                    $("#LoginBase_Lat_8236").val(position.coords.latitude);
+                    $("#LoginBase_Long_8236").val(position.coords.longitude);
+                    $("#LoginBase_PositioningAccuracy_8236").val(position.coords.accuracy);
+                });
+            }
+        };
+
+        $(document).ready(function ()
+        {
+            sessionStorage.removeItem("agroWebMenu");
+
+            //clear error when password press again
+            $("#Password").keypress(function() {
+                $("span[data-valmsg-for='DefaultErrorMessage']").removeClass("field-validation-error").addClass("field-validation-valid").empty();
+            });
+
+            //Query browser for it's current location (lat./long. coordinates).
+            getLocation();
+
+            $('#btnResetPassword').click(function () {
+
+                if ($("#UserName").val() != "") {
+                    // Chama o serviço para resetar senha
+                    $.ajax({
+                        
+                        url: "/Login/ConfirmResetPassword" + "?username=" + $('#UserName').val(),
+                        success: function (data) {
+                            if (data.Success == true) {
+                                toastr.success('Uma confirma&#231;&#227;o de redefini&#231;&#227;o de senha foi enviado para o usu&#225;rio.', 'Sucesso');
+                                $("#ResetPasswordArea").html('<p>Uma confirma&#231;&#227;o de redefini&#231;&#227;o de senha foi enviado para o usu&#225;rio.</p>');
+                            } else if (data.Success == false && data.Errors.length > 0) {
+                                toastr.error(data.Errors[0].Value, 'Erro');
+                                $("#ResetPasswordArea").html('<p>N&#227;o foi poss&#237;vel reajustar a senha. Tente novamente mais tarde e caso o problema persista, contate o administrador.</p>');
+                            } else {
+                                toastr.error('N&#227;o foi poss&#237;vel reajustar a senha.', 'Erro');
+                                $("#ResetPasswordArea").html('<p>N&#227;o foi poss&#237;vel reajustar a senha. Tente novamente mais tarde e caso o problema persista, contate o administrador.</p>');
+                            }
+                        },
+                        error: function (XMLHttpRequest, textStatus, errorThrown) {
+                            if (XMLHttpRequest.status == 0) {
+                                toastr.error('Rede n&#227;o encontrada.', 'Erro');
+                            } else if (XMLHttpRequest.status == 404) {
+                                toastr.error('URL n&#227;o encontrada.', 'Erro');
+                            } else if (XMLHttpRequest.status == 500) {
+                                toastr.error('Erro interno', 'Erro');
+                            } else {
+                                toastr.error('Erro desconhecido:' + XMLHttpRequest.responseText, 'Erro');
+                            }
+                        }
+                    });
+                }
+                else {
+                    toastr.error('Favor entrar com nome do usu&#225;rio.', 'Erro');
+                };
+            });
+
+                
+            $("#UserName").focus();
+                
+
+            var url = window.location.href.split("#/");
+
+            if (url.length > 1)
+            {
+                $("form").append("<input type='hidden' value='" + url[1] + "' name='returnUrl' />");
+            }
+        });
+    </script>
+
+</head>
+<body class="blank-layout bglogin beta">
+    <!--[if lt IE 7]>
+            <p class="chromeframe">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> or <a href="http://www.google.com/chromeframe/?redirect=true">activate Google Chrome Frame</a> to improve your experience.</p>
+        <![endif]-->
+
+    
+
+
+
+<form action="/Login/AuthenticateUser" class="client" id="loginForm" method="post">    <div class="box-container-login">
+        <div class="ga-container-fluid">
+            <div class="ga-row">
+
+                <div class="ga-col-12  ga-col-md-12 box-login">
+
+                     <div class="ga-row">
+
+                        <div class="ga-col-12  ga-col-md logo-top">
+
+                        </div>
+                    </div> <!-- row -->
+
+                    <div class="ga-row">
+
+                        <div class="ga-col-12  ga-col-md">
+
+                            <div id="ga-layout-login" class="ga-container-fluid">
+                                <div class="ga-row">
+
+                                    <div class="ga-col-12  ga-col-sm">
+
+                                <div class="campos">
+                                    <h1>
+                                        <i class="fas fa-lock"></i> Acesso Restrito
+                                    </h1>
+
+                                    <span class="field-validation-valid" data-valmsg-for="DefaultErrorMessage" data-valmsg-replace="true"></span>
+
+                                        <div class="ga-label-login" id="ResetPasswordArea"></div>
+<input id="LoginBase_Lat_8236" name="Lat" type="hidden" value="" /><input id="LoginBase_Long_8236" name="Long" type="hidden" value="" /><input data-val="true" data-val-number="O campo Acurácia deve ser um número." id="LoginBase_PositioningAccuracy_8236" name="PositioningAccuracy" type="hidden" value="" />                                        <div class="ga-editor-field">
+<input class="k-textbox" data-val="true" data-val-length="O campo deve conter no máximo 100 caracteres." data-val-length-max="100" data-val-required="O campo é requerido." id="UserName" name="UserName" placeholder="Usuário" type="text" value="" />
+                                            <span class="field-validation-valid" data-valmsg-for="UserName" data-valmsg-replace="true"></span>
+                                            <span class="login-user"><i class="fas fa-user"></i></span>
+                                        </div>
+                                            <div class="ga-editor-field">
+                                                <input class="k-textbox" data-val="true" data-val-length="O campo deve conter no máximo 100 caracteres." data-val-length-max="100" data-val-required="O campo é requerido." id="Password" name="Password" placeholder="Senha" type="password" />
+                                                <span class="field-validation-valid" data-valmsg-for="Password" data-valmsg-replace="true"></span>
+                                                <span class="login-pass"><i class="fas fa-key"></i></span>
+                                            </div>
+                                        <input type="submit" value="Entrar" class="k-button" />
+                                        <div class="ga-align-center">
+                                            <a class="ga-a-login" href="javascript:;" id="btnResetPassword">Esqueceu a senha?</a>
+                                        </div>
+
+                                </div>    
+                                    </div>
+                                    <div class="ga-col-12  ga-col-sm-5 logo">
+
+                                    </div>
+                                </div> <!-- row -->
+
+                            </div>    
+                        </div>
+                    </div> <!-- row -->
+
+                </div>
+            </div> <!-- row -->
+
+            <div class="ga-row">
+
+                <div class="ga-col-12  ga-col-md">
+
+                    <div class="ga-signature">
+                        <div>
+                            <span class="ga-version">v1.22.43.2</span>
+                        </div>
+                        <div id="ga-signature-logo" onclick="window.open('http://www.gatec.com.br', '_blank')">
+                            powered by <a title="GAtec - Gestão Agroindustrial" alt="GAtec - Gestão Agroindustrial"></a>
+                        </div>
+                    </div>
+                </div>
+            </div> <!-- row -->
+
+        </div>
+            
+        
+    </div>
+</form>
+<script>
+    $(function() {
+        var checkSession = function (onFinish) {
+            console.log("check session...");
+            $.ajax({
+                url: "/Login/CheckSession",
+                success: function(data)
+                {
+                    console.log("\tLogged -> " + data.Logged);
+                    if (data.Logged) {
+                        onFinish(true);
+                        $internalLoginOverlay.hideLoadingOverlay(false, 600, function() {
+                            console.log("Usuário logado novamente!")
+                        });
+                    }
+                    else
+                        onFinish(false);
+                },
+                error:function() {
+                    onFinish(false);
+                }
+            });
+        }
+
+        var checkSessionLocked = function() {
+            setTimeout(function() {
+                checkSession(function (success) {
+                    if (!success)
+                        checkSessionLocked();
+                });
+            }, 7000);
+        };
+
+        if (location.pathname != '/Login')
+            checkSessionLocked();
+    });
+</script>
+
+    
+</body>
+</html>
