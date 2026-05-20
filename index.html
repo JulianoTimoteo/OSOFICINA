@@ -403,7 +403,7 @@
       if (location.protocol === "file:") {
         showError("Arquivo aberto diretamente no navegador", "Este painel precisa do servidor Node para funcionar.", [
           "1. Abra o terminal na pasta do projeto",
-          "2. Execute: <code>node local-server.js</code>",
+          "2. Execute: <code>node server.js</code>",
           "3. Acesse: <code>http://localhost:3000</code>",
         ]);
         $refresh.classList.remove("spin");
@@ -452,7 +452,7 @@
               [
                 "O frontend está funcionando normalmente.",
                 "Para ver dados reais, rode localmente:",
-                "1. Execute: <code>node local-server.js</code>",
+                "1. Execute: <code>node server.js</code>",
                 "2. Acesse: <code>http://localhost:3000</code>",
               ]
             );
@@ -462,14 +462,14 @@
               "O proxy Node.js não está rodando nesta porta.",
               [
                 "1. Abra o terminal na pasta do projeto",
-                "2. Execute: <code>node local-server.js</code>",
+                "2. Execute: <code>node server.js</code>",
                 "3. Acesse: <code>http://localhost:3000</code>",
               ]
             );
           }
         } else {
           showError("Erro na API SimpleFarm", err.message, [
-            "Verifique usuário e senha no <code>local-server.js</code>",
+            "Verifique usuário e senha no <code>server.js</code>",
             "Confirme acesso à rede da usina",
           ]);
         }
