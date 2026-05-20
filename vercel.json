@@ -4,11 +4,11 @@
   "functions": {
     "api/auth/login.js": {
       "memory": 1024,
-      "maxDuration": 10
+      "maxDuration": 30
     },
     "api/os.js": {
       "memory": 1024,
-      "maxDuration": 10
+      "maxDuration": 30
     }
   },
   "headers": [

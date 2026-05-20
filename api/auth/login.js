@@ -3,7 +3,7 @@ const crypto = require('crypto');
 
 const JWT_SECRET = process.env.JWT_SECRET || 'agroflux-jwt-secret-key-2026';
 const INSECURE_TLS = (process.env.INSECURE_TLS === 'true');
-const AGENT = INSECURE_TLS ? new https.Agent({ rejectUnauthorized: false }) : undefined;
+const AGENT = INSECURE_TLS ? new https.Agent({ rejectUnauthorized: false, keepAlive: false }) : undefined;
 
 function generateToken(payload, expiresInSeconds = 86400) {
   const header = Buffer.from(JSON.stringify({ alg: 'HS256', typ: 'JWT' })).toString('base64url');
@@ -69,10 +69,6 @@ async function getGuid(cookies) {
 }
 
 module.exports = async (req, res) => {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-
   if (req.method === 'OPTIONS') {
     return res.status(204).end();
   }
