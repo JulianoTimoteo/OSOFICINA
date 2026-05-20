@@ -1,3 +1,10 @@
+// =====================================================
+// ESTE ARQUIVO É USADO SOMENTE NO VERCEL COMO DEMO
+// Para versão online com dados REAIS da SimpleFarm:
+//   - Use o server.js exposto publicamente (ngrok, Cloudflare Tunnel, VPS, etc.)
+//   - Preencha PROD_API_BASE no index.html com a URL pública
+// =====================================================
+
 const https = require('https');
 const crypto = require('crypto');
 

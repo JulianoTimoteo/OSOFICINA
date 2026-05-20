@@ -326,8 +326,19 @@
     const IS_VERCEL = location.hostname.includes('vercel.app');
     const IS_GITHUB_PAGES = location.hostname.includes('github.io');
 
+    // =====================================================
+    // CONFIG PARA FUNCIONAR ONLINE (VERCEL / GITHUB PAGES)
+    // =====================================================
+    // 1. Rode `node server.js` em uma máquina que consiga acessar a SimpleFarm (dentro da rede da usina).
+    // 2. Exponha essa máquina publicamente (mais rápido: ngrok http 3000).
+    // 3. Cole abaixo a URL pública gerada (ex: https://abc123.ngrok-free.app)
+    // 4. Faça deploy no Vercel ou GitHub Pages → vai chamar o backend real.
+    const PROD_API_BASE = '';   // <--- PREENCHA AQUI quando quiser versão online com dados reais
+
     // URL da API
-    const API_BASE = (IS_VERCEL || IS_GITHUB_PAGES) ? '' : 'http://localhost:3000';
+    const API_BASE = (IS_VERCEL || IS_GITHUB_PAGES)
+      ? (PROD_API_BASE || '')          // usa o backend público exposto
+      : 'http://localhost:3000';       // desenvolvimento local
 
     /* ── ORDEM DAS ABAS ───────────────────────────────────────── */
     const TAB_ORDER = [
