@@ -77,18 +77,22 @@ module.exports = async (req, res) => {
     return res.status(405).json({ ok: false, error: 'Method not allowed' });
   }
 
-  try {
-    const { username, password } = req.body;
-    if (!username || !password) {
-      return res.status(400).json({ ok: false, error: 'Usuário e senha obrigatórios' });
+  let body = '';
+  req.on('data', chunk => body += chunk);
+  req.on('end', async () => {
+    try {
+      const { username, password } = JSON.parse(body || '{}');
+      if (!username || !password) {
+        return res.status(400).json({ ok: false, error: 'Usuário e senha obrigatórios' });
+      }
+
+      const cookies = await authSimpleFarm(username, password);
+      const guid = await getGuid(cookies);
+      const token = generateToken({ username, cookies, guid });
+
+      res.status(200).json({ ok: true, token });
+    } catch (err) {
+      res.status(401).json({ ok: false, error: err.message });
     }
-
-    const cookies = await authSimpleFarm(username, password);
-    const guid = await getGuid(cookies);
-    const token = generateToken({ username, cookies, guid });
-
-    res.status(200).json({ ok: true, token });
-  } catch (err) {
-    res.status(401).json({ ok: false, error: err.message });
-  }
+  });
 };

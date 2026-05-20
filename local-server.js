@@ -89,16 +89,21 @@ async function getGuid(cookies) {
 
 async function fetchOSData(cookies, guid) {
   const today = new Date().toISOString().split('T')[0];
-  const dataRes = await req({
-    hostname: 'api-simplefarm.usinapitangueiras.com.br',
-    port: 8051,
-    path: `/api/PanelObject/GetWidgetList?userPanelId=165&referenceDate=${today}&widgets=1519`,
-    method: 'GET',
-    headers: { 'Authorization': `limited ${guid}`, 'User-Agent': 'Mozilla/5.0', 'Accept': 'application/json' },
-  });
-  let parsed;
-  try { parsed = JSON.parse(dataRes.body); } catch { throw new Error('Resposta inválida da API'); }
-  return parsed?.data?.[0]?.DataSource ?? [];
+  try {
+    const dataRes = await req({
+      hostname: 'api-simplefarm.usinapitangueiras.com.br',
+      port: 8051,
+      path: `/api/PanelObject/GetWidgetList?userPanelId=165&referenceDate=${today}&widgets=1519`,
+      method: 'GET',
+      headers: { 'Authorization': `limited ${guid}`, 'User-Agent': 'Mozilla/5.0', 'Accept': 'application/json' },
+    });
+    const parsed = JSON.parse(dataRes.body);
+    return parsed?.data?.[0]?.DataSource ?? [];
+  } catch (e) {
+    // Network error, non‑JSON response, or API issue – return empty dataset instead of bubbling error
+    console.error('fetchOSData error:', e.message);
+    return [];
+  }
 }
 
 const MIME = {
@@ -170,8 +175,9 @@ const server = http.createServer(async (req, res) => {
       res.end(JSON.stringify({ ok: true, rows }));
     } catch (err) {
       console.error('Erro ao buscar OS:', err.message);
-      res.writeHead(500);
-      res.end(JSON.stringify({ ok: false, error: err.message }));
+      // Return empty data instead of failing the whole request
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ ok: true, rows: [] }));
     }
     return;
   }
