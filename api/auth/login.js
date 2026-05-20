@@ -77,28 +77,22 @@ module.exports = async (req, res) => {
     return res.status(405).json({ ok: false, error: 'Method not allowed' });
   }
 
-  let body = '';
-  req.on('data', chunk => body += chunk);
-  req.on('end', async () => {
-    try {
-      const { username, password } = JSON.parse(body || '{}');
-      if (!username || !password) {
-        return res.status(400).json({ ok: false, error: 'Usuário e senha obrigatórios' });
-      }
+  // Proper body parser for Vercel
+  const buffers = [];
+  for await (const chunk of req) buffers.push(chunk);
+  const bodyStr = Buffer.concat(buffers).toString();
+  const { username, password } = JSON.parse(bodyStr || '{}');
 
-      // Demo mode on Vercel (no access to internal SimpleFarm)
-      if (process.env.VERCEL) {
-        const token = generateToken({ username, cookies: 'demo', guid: 'demo' });
-        return res.status(200).json({ ok: true, token });
-      }
+  if (!username || !password) {
+    return res.status(400).json({ ok: false, error: 'Usuário e senha obrigatórios' });
+  }
 
-      const cookies = await authSimpleFarm(username, password);
-      const guid = await getGuid(cookies);
-      const token = generateToken({ username, cookies, guid });
-
-      res.status(200).json({ ok: true, token });
-    } catch (err) {
-      res.status(401).json({ ok: false, error: err.message });
-    }
-  });
+  try {
+    const cookies = await authSimpleFarm(username, password);
+    const guid = await getGuid(cookies);
+    const token = generateToken({ username, cookies, guid });
+    res.status(200).json({ ok: true, token });
+  } catch (err) {
+    res.status(401).json({ ok: false, error: err.message });
+  }
 };
